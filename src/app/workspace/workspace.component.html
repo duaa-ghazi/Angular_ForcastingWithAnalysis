@@ -1,0 +1,135 @@
+<div class="row">
+    <form class="date-block" [formGroup]="filterForm">
+        <div class="date-block__list">
+            <mat-form-field>
+                <input matInput [matDatepicker]="fromDate" placeholder="From Date" formControlName="fromDate" required>
+                <mat-datepicker-toggle matSuffix [for]="fromDate"></mat-datepicker-toggle>
+                <mat-datepicker #fromDate></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="date-block__list">
+            <mat-form-field>
+                <input matInput [matDatepicker]="toDate" placeholder="To Date" formControlName="toDate" required>
+                <mat-datepicker-toggle matSuffix [for]="toDate"></mat-datepicker-toggle>
+                <mat-datepicker #toDate></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="filterBy">
+            <mat-form-field>
+                <input matInput  formControlName="filterEntityId" placeholder="Filter by device id ">
+            </mat-form-field>
+        </div>
+        <button mat-button color="primary" class="primary" (click)="applyFilterBy()">Submit</button>
+    </form>
+</div>
+
+
+
+<div class="row">
+    <div class="mat-elevation-z8">
+        <div class="icon">
+            <mat-form-field style="width: 90px; margin: 0 8px;">
+                <mat-select placeholder="Download ">
+                    <mat-option>
+                        <a mat-raised-button
+                            (click)="exporter.exportTable('xlsx', {fileName:'table', sheet: 'sheet_name', Props: {Author: 'Duaa'}})">Excel</a>
+                    </mat-option>
+                    <mat-option> <a mat-raised-button (click)="exporter.exportTable('csv')">CSV</a>
+                    </mat-option>
+                    <mat-option> <a mat-raised-button (click)="exporter.exportTable('json')">Json</a>
+                    </mat-option>
+                    <mat-option> <a mat-raised-button (click)="exporter.exportTable('txt')">Txt</a>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <table mat-table matTableExporter #filteredTable #exporter="matTableExporter" [dataSource]="dataSource">
+            <!-- Entity-device Column -->
+            <ng-container matColumnDef="entityId">
+                <th mat-header-cell *matHeaderCellDef> Device Id </th>
+                <td mat-cell *matCellDef="let element"> {{element.entityId}} </td>
+            </ng-container>
+
+            <!-- Date Column -->
+            <ng-container matColumnDef="ts">
+                <th mat-header-cell *matHeaderCellDef> Date </th>
+                <td mat-cell *matCellDef="let element"> {{element.ts| date: 'MM/dd/yyyy'}} </td>
+            </ng-container>
+
+            <!-- Value Column -->
+            <ng-container matColumnDef="doubleValue">
+                <th mat-header-cell *matHeaderCellDef> Value </th>
+                <td mat-cell *matCellDef="let element"> {{element.doubleValue}} </td>
+            </ng-container>
+
+            <!-- Type Column -->
+            <ng-container matColumnDef="strKey">
+                <th mat-header-cell *matHeaderCellDef> Type </th>
+                <td mat-cell *matCellDef="let element"> {{element.strKey}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
+            aria-label="Select page of recordsForTelemetry">
+        </mat-paginator>
+    </div>
+    <div>
+    </div>
+</div>
+<div class="row">
+    <div class="statisticsSummaries">
+        <h2>Statistics Summaries : </h2>
+        <div class="row">
+            <div class="col">
+                <div *ngIf="statisticsFunctions">
+                    <ul>
+                        <li>
+                            <h3> count : {{statisticsFunctions.count}} </h3>
+                        </li>
+                        <li>
+                            <h3>mean : {{statisticsFunctions.mean}} </h3>
+                        </li>
+                        <li>
+                            <h3> std : {{statisticsFunctions.std}} </h3>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col">
+                <div *ngIf="statisticsFunctions">
+                    <ul>
+                        <li>
+                            <h3> min : {{statisticsFunctions.min}} </h3>
+                        </li>
+                        <li>
+                            <h3> max : {{statisticsFunctions.max}} </h3>
+                        </li>
+                        <li>
+                            <h3> sum : {{statisticsFunctions.sum}} </h3>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+<br>
+<div class="row">
+    <mat-drawer-container bottom>
+        <mat-drawer mode="side" opened="true">
+            <mat-menu></mat-menu>
+            <a mat-menu-item (click)="plotLineChart()" routerLinkActive="active"> Line Chart</a>
+            <a mat-menu-item (click)="plotBarChart()" routerLinkActive="active"> Bar Chart</a>
+            <a mat-menu-item (click)="plotPieChart()" routerLinkActive="active"> Pie Chart</a>
+            <a mat-menu-item (click)="Forcast()" routerLinkActive="active"> Forcast Next Month</a>
+        </mat-drawer>
+        <mat-drawer-content>
+            <router-outlet></router-outlet>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>
